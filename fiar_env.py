@@ -216,13 +216,35 @@ def next_state(state, action1d):
     if not ((0 <= action2d[0] < state.shape[1]) and (0 <= action2d[1] < state.shape[2])):
         raise ValueError("Invalid move", action2d)
 
+    # Assert move is valid
+    assert state[INVD_CHNL, action2d[0], action2d[1]] == 0, ("Invalid move", action2d)
+
     # Add piece
     state[player, action2d[0], action2d[1]] = 1
+
+    # Get adjacent location and check whether the piece will be surrounded by opponent's piece
+    adj_locs, surrounded = state_utils.adj_data(state, action2d, player)
+    surrounded = False
+
+    # Update pieces
+    killed_groups = state_utils.update_pieces(state, adj_locs, player)
+    # killed_groups = []
+
+    # If only killed one group, and that one group was one piece, and piece set is surrounded,
+    # activate ko protection
+    if len(killed_groups) == 1 and surrounded:
+        killed_group = killed_groups[0]
+        if len(killed_group) == 1:
+            ko_protect = killed_group[0]
+
+    # Update invalid moves
+    state[INVD_CHNL] = state_utils.compute_invalid_moves(state, player, ko_protect)
+    state[INVD_CHNL] = state_utils.compute_invalid_moves(state, player, ko_protect)
 
     # Update FIAR ending status
     state[DONE_CHNL] = fiar_check(state)
 
-    if np.any(state[DONE_CHNL] == 0): # proceed if it is not ended
+    if np.any(state[DONE_CHNL] == 0):   # proceed if it is not ended
         # Switch turn
         state_utils.set_turn(state)
 

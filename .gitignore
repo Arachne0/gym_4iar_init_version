@@ -1,4 +1,4 @@
-/fiar-python git rm --cached -r [폴더/파일이름]
+/fiar-python
 .vscode/
 __pycache__/
 .idea/
