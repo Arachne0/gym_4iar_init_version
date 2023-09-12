@@ -1,0 +1,9 @@
+/fiar-python git rm --cached -r [폴더/파일이름]
+.vscode/
+__pycache__/
+.idea/
+logs/
+wandb/
+*.log
+*.out
+*.model
